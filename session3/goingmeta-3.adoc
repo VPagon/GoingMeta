@@ -1,0 +1,88 @@
+## Going Meta #3
+
+
+### Load a subset of the SHACL shapes
+[source, python]
+----
+call n10s.validation.shacl.import.inline('
+
+
+@prefix ex: <http://example.neo4j.com/graphvalidation#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix neo4j: <neo4j://graph.schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:SupplierShape a sh:NodeShape ;
+  sh:targetClass neo4j:Supplier ;
+  sh:property [
+    sh:path neo4j:companyName ;
+    sh:pattern "^\\w[^&]*$" ;
+    sh:maxCount 1 ;        
+    sh:datatype xsd:string ;
+  ] .
+
+','Turtle')
+----
+
+### Validate the graph
+[source,python]
+----
+call n10s.validation.shacl.validate() 
+----
+
+### Modify the graph manually
+[source, python]
+----
+match (s:Supplier) with s limit 1
+set s.companyName = [s.companyName, replace(s.companyName, " ", "")]
+return s
+----
+
+### And validate again to see the impact
+[source,python]
+----
+call n10s.validation.shacl.validate() 
+----
+
+### Load the complete set of SHACL shapes
+[source, python]
+----
+call n10s.validation.shacl.import.fetch("https://raw.githubusercontent.com/jbarrasa/goingmeta/main/session3/shapes/northwind-shacl.ttl","Turtle")
+----
+
+### list the shapes that are active for a given node type (`Supplier`)
+[source,python]
+----
+call n10s.validation.shacl.listShapes() yield target, propertyOrRelationshipPath, param, value
+where target = 'Supplier'
+return target, propertyOrRelationshipPath, param, value
+----
+
+### Run the validation
+[source, python]
+----
+call n10s.validation.shacl.validate() 
+----
+
+
+### Run the validation and filter results
+[source, python]
+----
+call n10s.validation.shacl.validate() yield focusNode, nodeType, shapeId, propertyShape, offendingValue, resultPath, severity, resultMessage
+where focusNode = 20
+return focusNode, nodeType, shapeId, propertyShape, offendingValue, resultPath, severity, resultMessage
+----
+
+
+### Use the severity of a shape to define property based status
+[source, python]
+----
+call n10s.validation.shacl.import.fetch("https://raw.githubusercontent.com/jbarrasa/goingmeta/main/session3/shapes/northwind-custom-sev-shacl.ttl","Turtle")
+----
+
+### Run the validation and aggregate by severity
+[source, python]
+----
+call n10s.validation.shacl.validate()  yield focusNode, nodeType, shapeId, propertyShape, offendingValue, resultPath, severity, resultMessage
+return n10s.rdf.getIRILocalName(severity), count(*)
+----
