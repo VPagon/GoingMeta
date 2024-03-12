@@ -12,7 +12,7 @@
 #    Object Properties
 #################################################################
 
-###  http://neo4j.com/voc/movies#WROTE
+###  http://neo4j.com/voc/movies#/WROTE
 :WROTE rdf:type owl:ObjectProperty ;
        rdfs:domain :ScreenWriter ;
        rdfs:range :Movie ;
@@ -23,14 +23,28 @@
 #    Data properties
 #################################################################
 
-###  http://neo4j.com/voc/movies#born
+###  http://neo4j.com/voc/movies#released
+:released rdf:type owl:DatatypeProperty ;
+          rdfs:domain :Movie ;
+          rdfs:range xsd:integer ;
+          rdfs:comment "year when the movie was premiered"@en .
+
+
+###  http://neo4j.com/voc/movies#title
+:title rdf:type owl:DatatypeProperty ;
+       rdfs:domain :Movie ;
+       rdfs:range xsd:string ;
+       rdfs:comment "A name for the movie"@en .
+
+
+###  http://neo4j.com/voc/movies#/born
 :born rdf:type owl:DatatypeProperty ;
       rdfs:domain :ScreenWriter ;
       rdfs:range xsd:integer ;
       rdfs:comment "year of birth of a person"@en .
 
 
-###  http://neo4j.com/voc/movies#name
+###  http://neo4j.com/voc/movies#/name
 :name rdf:type owl:DatatypeProperty ;
       rdfs:domain :ScreenWriter ;
       rdfs:range xsd:string ;
@@ -41,12 +55,12 @@
 #    Classes
 #################################################################
 
-###  http://neo4j.com/voc/movies#Movie
+###  http://neo4j.com/voc/movies#/Movie
 :Movie rdf:type owl:Class ;
        rdfs:comment "sequence of images that give the impression of movement, stored on film stock"@en .
 
 
-###  http://neo4j.com/voc/movies#ScreenWriter
+###  http://neo4j.com/voc/movies#/ScreenWriter
 :ScreenWriter rdf:type owl:Class ;
               rdfs:comment "The person responsible for writing the script"@en .
 
